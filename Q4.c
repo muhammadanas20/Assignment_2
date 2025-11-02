@@ -7,6 +7,7 @@ void push(int stack[], int *top, int maxSize);
 void pop(int stack[], int *top);
 void peek(int stack[], int top);
 void display(int stack[], int top);
+int getIntegerInput(const char* prompt);
 
 int main() {
     int stack[MAX];
@@ -20,10 +21,8 @@ int main() {
         printf("3. PEEK (Top Element)\n");
         printf("4. DISPLAY (All Elements)\n");
         printf("5. EXIT\n");
-        printf("Enter your choice: ");
-        scanf("%d", &choice);
-
-        switch (choice) {
+        choice = getIntegerInput("Enter your choice: ");
+switch (choice){
             case 1:
                 push(stack, &top, MAX);
                 break;
@@ -46,6 +45,21 @@ int main() {
 
     return 0;
 }
+int getIntegerInput(const char* prompt) {
+    int value;
+    int result;
+    printf("%s", prompt); 
+    while (1) { 
+        result = scanf("%d", &value);
+        if (result == 1) {    
+            while (getchar() != '\n');
+            return value; 
+        } else {     
+            printf("Invalid input! Please enter a number: ");  
+            while (getchar() != '\n'); 
+        }
+    }
+}
 
 // Function to PUSH element onto stack
 void push(int stack[], int *top, int maxSize) {
@@ -54,9 +68,7 @@ void push(int stack[], int *top, int maxSize) {
         return;
     }
 
-    int value;
-    printf("Enter value to push: ");
-    scanf("%d", &value);
+    int value = getIntegerInput("Enter value to push: ");
 
     (*top)++;
     stack[*top] = value;

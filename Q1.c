@@ -4,6 +4,8 @@
 #define MAX_BOOKS 100
 
 // Function Prototypes
+int getIntegerInput(const char* prompt);
+float getFloatInput(const char* prompt);
 void addBook(int isbns[], char titles[][50], float prices[], int quantities[], int *count);
 void processSale(int isbns[], int quantities[], int count);
 void generateLowStockReport(int isbns[], char titles[][50], float prices[], int quantities[], int count);
@@ -23,8 +25,9 @@ int main() {
         printf("2. Process a Sale\n");
         printf("3. Generate Low-Stock Report\n");
         printf("4. Exit\n");
-        printf("Enter your choice: ");
-        scanf("%d", &choice);
+
+
+        choice = getIntegerInput("Enter your choice: ");
 
         switch (choice) {
             case 1:
@@ -48,7 +51,41 @@ int main() {
     return 0;
 }
 
-// Function to find a book by ISBN
+
+int getIntegerInput(const char* prompt) {
+    int value;
+    int result;
+    printf("%s", prompt); 
+    while (1) { 
+        result = scanf("%d", &value);
+        if (result == 1) {    
+            while (getchar() != '\n'); // Clear buffer on success
+            return value; 
+        } else {     
+            printf("Invalid input! Please enter a number: ");  
+            while (getchar() != '\n'); // Clear buffer on failure
+        }
+    }
+}
+
+float getFloatInput(const char* prompt) {
+    float value;
+    int result;
+    printf("%s", prompt); 
+    while (1) { 
+        result = scanf("%f", &value);
+        if (result == 1) {    
+            while (getchar() != '\n'); // Clear buffer on success
+            return value; 
+        } else {     
+            printf("Invalid input! Please enter a number: ");  
+            while (getchar() != '\n'); // Clear buffer on failure
+        }
+    }
+}
+
+
+// Function to find a book by ISBN 
 int findBookByISBN(int isbns[], int count, int isbn) {
     int i;
     for (i = 0; i < count; i++) {
@@ -66,9 +103,7 @@ void addBook(int isbns[], char titles[][50], float prices[], int quantities[], i
         return;
     }
 
-    int isbn;
-    printf("Enter ISBN: ");
-    scanf("%d", &isbn);
+    int isbn = getIntegerInput("Enter ISBN: ");
 
     // Check for duplicate ISBN
     if (findBookByISBN(isbns, *count, isbn) != -1) {
@@ -78,15 +113,26 @@ void addBook(int isbns[], char titles[][50], float prices[], int quantities[], i
 
     isbns[*count] = isbn;
     printf("Enter title: ");
-    getchar(); // Clear newline
     fgets(titles[*count], 50, stdin);
     titles[*count][strcspn(titles[*count], "\n")] = '\0'; // Remove newline
 
-    printf("Enter price: ");
-    scanf("%f", &prices[*count]);
+   
+    while (1) {
+        prices[*count] = getFloatInput("Enter price: ");
+        if (prices[*count] >= 0) {
+            break; 
+        }
+        printf("Error: Price cannot be negative.\n");
+    }
 
-    printf("Enter quantity: ");
-    scanf("%d", &quantities[*count]);
+    
+    while (1) {
+        quantities[*count] = getIntegerInput("Enter quantity: ");
+        if (quantities[*count] >= 0) {
+            break; 
+        }
+        printf("Error: Quantity cannot be negative.\n");
+    }
 
     (*count)++;
     printf("Book added successfully!\n");
@@ -95,8 +141,9 @@ void addBook(int isbns[], char titles[][50], float prices[], int quantities[], i
 // Function to process a sale
 void processSale(int isbns[], int quantities[], int count) {
     int isbn, qtySold;
-    printf("Enter ISBN of the book sold: ");
-    scanf("%d", &isbn);
+    
+  
+    isbn = getIntegerInput("Enter ISBN of the book sold: ");
 
     int index = findBookByISBN(isbns, count, isbn);
     if (index == -1) {
@@ -104,25 +151,33 @@ void processSale(int isbns[], int quantities[], int count) {
         return;
     }
 
-    printf("Enter quantity sold: ");
-    scanf("%d", &qtySold);
+    while (1) {
+        qtySold = getIntegerInput("Enter quantity sold: ");
+        if (qtySold > 0) {
+            break; 
+        }
+        printf("Error: Quantity sold must be a positive number.\n");
+    }
 
     if (qtySold > quantities[index]) {
-        printf("Error: Not enough stock available.\n");
+        printf("Error: Not enough stock available. Only %d left.\n", quantities[index]);
     } else {
         quantities[index] -= qtySold;
         printf("Sale processed successfully! Remaining stock: %d\n", quantities[index]);
     }
 }
 
-// Function to generate a low-stock report
+// Function to generate a low-stock report 
 void generateLowStockReport(int isbns[], char titles[][50], float prices[], int quantities[], int count) {
     int found = 0;
     printf("\n===== Low Stock Report (Quantity < 5) =====\n");
-int i ;
+    printf("ISBN\t| Title\t\t\t| Price\t| Qty\n");
+    printf("------------------------------------------------------\n");
+
+    int i ;
     for (i = 0; i < count; i++) {
         if (quantities[i] < 5) {
-            printf("ISBN: %d | Title: %s | Price: %.2f | Quantity: %d\n",
+            printf("%d\t| %-20s\t| %.2f\t| %d\n",
                    isbns[i], titles[i], prices[i], quantities[i]);
             found = 1;
         }

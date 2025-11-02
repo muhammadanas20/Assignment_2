@@ -13,6 +13,7 @@ void updateSectorStatus(int grid[ROWS][COLS]);
 void querySectorStatus(int grid[ROWS][COLS]);
 void runSystemDiagnostic(int grid[ROWS][COLS]);
 void displayMenu();
+int getIntegerInput(const char* prompt);
 
 int main() {
     int grid[ROWS][COLS] = {0}; // Initialize all sectors to 0 (all bits off)
@@ -20,10 +21,9 @@ int main() {
 
     do {
         displayMenu();
-        printf("Enter your choice: ");
-        scanf("%d", &choice);
+       choice = getIntegerInput("Enter your choice: ");
 
-        switch (choice) {
+switch (choice){
             case 1:
                 updateSectorStatus(grid);
                 break;
@@ -44,7 +44,21 @@ int main() {
 
     return 0;
 }
-
+int getIntegerInput(const char* prompt) {
+    int value;
+    int result;
+    printf("%s", prompt); 
+    while (1) { 
+        result = scanf("%d", &value);
+        if (result == 1) {    
+            while (getchar() != '\n');
+            return value; 
+        } else {     
+            printf("Invalid input! Please enter a number: ");  
+            while (getchar() != '\n'); 
+        }
+    }
+}
 // Display menu
 void displayMenu() {
     printf("\n========== IESCO Power Grid Monitoring ==========\n");
@@ -57,9 +71,8 @@ void displayMenu() {
 // Function to update a sector's status using bitwise operations
 void updateSectorStatus(int grid[ROWS][COLS]) {
     int row, col, flagChoice, action;
-
-    printf("Enter sector coordinates (row col): ");
-    scanf("%d %d", &row, &col);
+row = getIntegerInput("Enter sector coordinates (row): ");
+col = getIntegerInput("Enter sector coordinates (col): ");
 
     if (row < 0 || row >= ROWS || col < 0 || col >= COLS) {
         printf("Invalid coordinates!\n");
@@ -70,14 +83,11 @@ void updateSectorStatus(int grid[ROWS][COLS]) {
     printf("1. Power ON/OFF\n");
     printf("2. Overload Warning\n");
     printf("3. Maintenance Required\n");
-    printf("Enter choice: ");
-    scanf("%d", &flagChoice);
+    flagChoice = getIntegerInput("Enter choice: ");
 
     printf("1. Set Flag (Turn ON)\n");
     printf("2. Clear Flag (Turn OFF)\n");
-    printf("Enter action: ");
-    scanf("%d", &action);
-
+   action = getIntegerInput("Enter action: ");
     int flag = 0;
     switch (flagChoice) {
         case 1: flag = POWER_ON; break;
@@ -103,9 +113,8 @@ void updateSectorStatus(int grid[ROWS][COLS]) {
 // Function to query a sector and display human-readable status
 void querySectorStatus(int grid[ROWS][COLS]) {
     int row, col;
-    printf("Enter sector coordinates (row col): ");
-    scanf("%d %d", &row, &col);
-
+   row = getIntegerInput("Enter sector coordinates (row): ");
+   col = getIntegerInput("Enter sector coordinates (col): ");
     if (row < 0 || row >= ROWS || col < 0 || col >= COLS) {
         printf("Invalid coordinates!\n");
         return;
@@ -117,7 +126,7 @@ void querySectorStatus(int grid[ROWS][COLS]) {
     printf("Power Status: %s\n", (status & POWER_ON) ? "ON" : "OFF");
     printf("Overload Warning: %s\n", (status & OVERLOAD) ? "YES" : "NO");
     printf("Maintenance Required: %s\n", (status & MAINTENANCE) ? "YES" : "NO");
-    printf("Binary Code: %03d (decimal %d)\n", status, status);
+    printf("Raw Status Code: %d\n", status);
 }
 
 // Function to scan the entire grid and count overloaded and maintenance sectors

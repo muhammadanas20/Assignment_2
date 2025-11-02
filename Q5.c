@@ -20,8 +20,15 @@ int main() {
         printf("2. Decode Message\n");
         printf("3. Exit\n");
         printf("Enter your choice: ");
-        scanf("%d", &choice);
-        getchar(); // clear input buffer
+        int result = scanf("%d", &choice);
+        if (result != 1) { 
+        printf("Invalid input! Please enter a number.\n");
+        while (getchar() != '\n'); 
+        choice = 0; 
+      }else {
+        
+        while (getchar() != '\n');
+     }
 
         switch (choice) {
             case 1:
